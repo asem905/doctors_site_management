@@ -6,6 +6,8 @@ import 'package:flutter_complete_proj/features/onboarding/onboarding_screen.dart
 class AppRouter 
 {
   Route generateRoute(RouteSettings settings) {
+    //arguments used to pass data from one screen to another
+    final arguments=settings.arguments;
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(builder: (_) => const OnBoardingScreen());
