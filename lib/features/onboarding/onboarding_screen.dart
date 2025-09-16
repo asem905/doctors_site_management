@@ -15,6 +15,8 @@ class OnBoardingScreen extends StatelessWidget {
       body: SafeArea(child: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.only(
+            left: 10.h,
+            right: 10.h,
             top: 30.h,
             bottom: 30.h,
           ),
