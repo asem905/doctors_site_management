@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_complete_proj/core/theming/styles.dart';
 
-class AlreadyHaveAnAccountText extends StatelessWidget {
-  const AlreadyHaveAnAccountText({super.key});
+class DontHaveAnAccountText extends StatelessWidget {
+  const DontHaveAnAccountText({super.key});
 
   @override
   Widget build(BuildContext context) {
