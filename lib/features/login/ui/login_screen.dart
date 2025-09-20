@@ -5,7 +5,7 @@ import 'package:flutter_complete_proj/core/theming/styles.dart';
 import 'package:flutter_complete_proj/core/widgets/app_text_button.dart';
 import 'package:flutter_complete_proj/core/widgets/app_text_form_field.dart';
 import 'package:flutter_complete_proj/features/login/logic/cubit/login_cubit.dart';
-import 'package:flutter_complete_proj/features/login/ui/widgets/already_have_an_account_text.dart';
+import 'package:flutter_complete_proj/features/login/ui/widgets/dont_have_an_account_text.dart';
 import 'package:flutter_complete_proj/features/login/ui/widgets/email_and_password.dart';
 import 'package:flutter_complete_proj/features/login/ui/widgets/login_bloc_listener.dart';
 import 'package:flutter_complete_proj/features/login/ui/widgets/terms_and_conditions_text.dart';
@@ -45,10 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   AppTextButton(buttonText: "Login", 
                     onPressed:(){
                       if(context.read<LoginCubit>().formKey.currentState!.validate()){
-                        context.read<LoginCubit>().emitLoginState(
-                          context.read<LoginCubit>().emailController.text,
-                          context.read<LoginCubit>().passwordController.text
-                        );
+                        context.read<LoginCubit>().emitLoginState();
                       }
                     },
                     textStyle: TextStyles.font16WhiteSemiBold,
@@ -56,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   verticalSpacing(16),
                   TermsAndConditionsText(),
                   verticalSpacing(60),
-                  AlreadyHaveAnAccountText(),
+                  DontHaveAnAccountText(),
                   const LoginBlocListener(),
                 ],
               )
