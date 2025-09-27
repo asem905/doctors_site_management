@@ -12,3 +12,26 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+# Build artifacts
+**/android/app/build/
+**/build/
+**/*.apk
+**/*.aab
+**/*.so
+**/*.dylib
+
+# iOS build artifacts
+**/ios/build/
+**/Pods/
+
+# Flutter/Dart specific
+**/.dart_tool/
+**/.packages
+**/.pub-cache/
+**/.pub/
+**/pubspec.lock
+
+# IDE files
+**/.vscode/
+**/.idea/
+**/*.iml
