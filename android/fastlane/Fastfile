@@ -1,0 +1,19 @@
+
+default_platform(:android)
+
+platform :android do
+  desc "Lane For Android Firebase App Distribution"
+  lane :firebase_distribution do
+    sh "flutter clean"
+    sh "flutter build apk --release --flavor production --target=lib/main_production.dart"
+    firebase_app_distribution(
+    app: "1:1012880772368:android:315466b8a3b64976ac2995",# Your App ID Found in Firebase Console
+    firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"], # Your Firebase CLI Token Got from `firebase login:ci`
+    android_artifact_type:"APK", # Type of Artifact to be uploaded (APK or AAB)
+    android_artifact_path:"I:/flutter_advanced_course/flutter_complete_proj/build/app/outputs/flutter-apk/app-production-release.apk", # Path to your APK or AAB
+    testers:"asemosamyy@gmail.com", # Comma-separated list of tester emails
+    release_notes: "New Update Available" # Release notes for this build
+
+  )
+  end
+end
