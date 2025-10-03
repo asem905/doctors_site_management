@@ -15,6 +15,8 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loginCubit = context.read<LoginCubit>();
+    
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -35,7 +37,9 @@ class LoginScreen extends StatelessWidget {
                 verticalSpacing(36),
                 Column(
                   children: [
-                    const EmailAndPassword(),
+                    EmailAndPassword(
+                      loginCubit: loginCubit,
+                    ),
                     verticalSpacing(24),
                     Align(
                       alignment: AlignmentDirectional.centerEnd,
@@ -49,7 +53,7 @@ class LoginScreen extends StatelessWidget {
                       buttonText: "Login",
                       textStyle: TextStyles.font16WhiteSemiBold,
                       onPressed: () {
-                        validateThenDoLogin(context);
+                        validateThenDoLogin(context, loginCubit);
                       },
                     ),
                     verticalSpacing(16),
@@ -67,9 +71,9 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  void validateThenDoLogin(BuildContext context) {
-    if (context.read<LoginCubit>().formKey.currentState!.validate()) {
-      context.read<LoginCubit>().emitLoginState();
+  void validateThenDoLogin(BuildContext context, LoginCubit loginCubit) {
+    if (loginCubit.formKey.currentState!.validate()) {
+      loginCubit.emitLoginState();
     }
   }
 }

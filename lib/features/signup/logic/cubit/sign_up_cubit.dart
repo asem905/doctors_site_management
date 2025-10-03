@@ -19,7 +19,7 @@ class SignupCubit extends Cubit<SignupState> {
 
   void emitSignupStates() async {
     emit(const SignupState.signupLoading());
-    print('SignupCubit: emitSignupStates called with name: ${nameController.text}, email: ${emailController.text}, phone: ${phoneController.text}, password: ${passwordController.text}, passwordConfirmation: ${passwordConfirmationController.text}');
+    // print('SignupCubit: emitSignupStates called with name: ${nameController.text}, email: ${emailController.text}, phone: ${phoneController.text}, password: ${passwordController.text}, passwordConfirmation: ${passwordConfirmationController.text}');
     final response = await _signupRepo.signup(
       SignupRequestBody(
         name: nameController.text,

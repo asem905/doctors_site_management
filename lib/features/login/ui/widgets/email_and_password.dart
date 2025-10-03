@@ -1,7 +1,6 @@
 // ignore_for_file: unnecessary_null_comparison
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_complete_proj/core/helpers/app_regex.dart';
 import 'package:flutter_complete_proj/features/login/logic/cubit/login_cubit.dart';
 import '../../../../core/helpers/spacing.dart';
@@ -9,7 +8,8 @@ import '../../../../core/widgets/app_text_form_field.dart';
 import 'password_validations.dart';
 
 class EmailAndPassword extends StatefulWidget {
-  const EmailAndPassword({super.key});
+  final LoginCubit loginCubit;
+  const EmailAndPassword({super.key, required this.loginCubit});
 
   @override
   State<EmailAndPassword> createState() => _EmailAndPasswordState();
@@ -25,31 +25,61 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
   bool hasMinLength = false;
 
   late TextEditingController passwordController;
+  bool _listenerAttached = false;
 
   @override
   void initState() {
     super.initState();
-    passwordController = context.read<LoginCubit>().passwordController;
+    passwordController = widget.loginCubit.passwordController;
     setupPasswordControllerListener();
   }
 
   void setupPasswordControllerListener() {
-    passwordController.addListener(() {
-      setState(() {
-        hasLowercase = AppRegex.hasLowerCase(passwordController.text);
-        hasUppercase = AppRegex.hasUpperCase(passwordController.text);
-        hasSpecialCharacters =
-            AppRegex.hasSpecialCharacter(passwordController.text);
-        hasNumber = AppRegex.hasNumber(passwordController.text);
-        hasMinLength = AppRegex.hasMinLength(passwordController.text);
-      });
+    // Only add listener if not already attached and controller is not disposed
+    if (!_listenerAttached) {
+      try {
+        passwordController.addListener(_onPasswordChanged);
+        _listenerAttached = true;
+      } catch (e) {
+        // Controller might be disposed, ignore
+        debugPrint('Failed to add listener: $e');
+      }
+    }
+  }
+
+  void _onPasswordChanged() {
+    // Check if widget is still mounted before calling setState
+    if (!mounted) return;
+    
+    setState(() {
+      hasLowercase = AppRegex.hasLowerCase(passwordController.text);
+      hasUppercase = AppRegex.hasUpperCase(passwordController.text);
+      hasSpecialCharacters =
+          AppRegex.hasSpecialCharacter(passwordController.text);
+      hasNumber = AppRegex.hasNumber(passwordController.text);
+      hasMinLength = AppRegex.hasMinLength(passwordController.text);
     });
+  }
+
+  @override
+  void dispose() {
+    // Only remove listener if it was successfully attached
+    if (_listenerAttached) {
+      try {
+        passwordController.removeListener(_onPasswordChanged);
+        _listenerAttached = false;
+      } catch (e) {
+        // Controller might already be disposed, ignore
+        debugPrint('Failed to remove listener: $e');
+      }
+    }
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: context.read<LoginCubit>().formKey,
+      key: widget.loginCubit.formKey,
       child: Column(
         children: [
           AppTextFormField(
@@ -60,12 +90,13 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
                   !AppRegex.isEmailValid(value)) {
                 return 'Please enter a valid email';
               }
+              return null;
             },
-            controller: context.read<LoginCubit>().emailController,
+            controller: widget.loginCubit.emailController,
           ),
           verticalSpacing(18),
           AppTextFormField(
-            controller: context.read<LoginCubit>().passwordController,
+            controller: widget.loginCubit.passwordController,
             hintText: 'Password',
             isObscureText: isObscureText,
             suffixIcon: GestureDetector(
@@ -82,6 +113,7 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
               if (value == null || value.isEmpty) {
                 return 'Please enter a valid password';
               }
+              return null;
             },
           ),
           verticalSpacing(24),
@@ -95,10 +127,5 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
         ],
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 }

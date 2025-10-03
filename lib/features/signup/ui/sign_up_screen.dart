@@ -78,19 +78,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
   void validateThenDoSignup(BuildContext context) {
   
-  // Debug before validation
-  print("Before validation - Controller values:");
-  print("Name: '${signupCubit.nameController.text}'");
-  print("Email: '${signupCubit.emailController.text}'");
-  print("Phone: '${signupCubit.phoneController.text}'");
-  print("Password: '${signupCubit.passwordController.text}'");
-  print("Password Confirmation: '${signupCubit.passwordConfirmationController.text}'");
-  
   if (signupCubit.formKey.currentState!.validate()) {
-    print("Form validation passed!");
     signupCubit.emitSignupStates();
   } else {
-    print("Form validation failed!");
   }
 }
 }
