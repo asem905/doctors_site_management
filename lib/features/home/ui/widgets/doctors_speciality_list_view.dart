@@ -34,7 +34,7 @@ class DoctorsSpecialityListView extends StatelessWidget {
                 ),
                 verticalSpacing(8),
                 Text(
-                  'Assem',
+                  specializationDataList[index]?.name ?? '',
                   style: TextStyles.font12DarkBlueRegular,
                 ),
               ],
