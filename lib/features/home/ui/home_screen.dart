@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_proj/core/helpers/spacing.dart';
+import 'package:flutter_complete_proj/features/home/ui/widgets/doctors_blue_container.dart';
 import 'package:flutter_complete_proj/features/home/ui/widgets/home_top_bar.dart';
 
 
@@ -23,7 +24,7 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const HomeTopBar(),
-              // const DoctorsBlueContainer(),
+              DoctorsBlueContainer(),
               // verticalSpacing(24),
               // const DoctorsSpecialitySeeAll(),
               // verticalSpacing(18),

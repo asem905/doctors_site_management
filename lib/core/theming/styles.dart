@@ -94,4 +94,14 @@ class TextStyles{
       fontWeight: FontweightHelper.regular,
       color: ColorsManager.lightGray
   );
+  static TextStyle font18WhiteMedium=TextStyle(
+      fontSize: 18.sp,
+      fontWeight: FontweightHelper.medium,
+      color: Colors.white
+  );
+  static TextStyle font12BlueRegular=TextStyle(
+      fontSize: 12.sp,
+      fontWeight: FontweightHelper.regular,
+      color: ColorsManager.mainBlue
+  );
 }
