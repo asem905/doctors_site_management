@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors_in_immutables
 
 import 'package:flutter/material.dart';
+import 'package:flutter_complete_proj/core/helpers/constants.dart';
 import 'package:flutter_complete_proj/core/routing/app_router.dart';
 import 'package:flutter_complete_proj/core/routing/routes.dart';
 import 'package:flutter_complete_proj/core/theming/colors.dart';
@@ -22,7 +23,7 @@ class DocApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.white,
         ),
         onGenerateRoute: appRouter.generateRoute,
-        initialRoute: Routes.onBoardingScreen,
+        initialRoute:isLoggedInUser? Routes.onBoardingScreen:Routes.homeScreen,
       ),
     );
   }

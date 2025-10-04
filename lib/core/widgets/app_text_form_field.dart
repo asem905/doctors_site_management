@@ -33,6 +33,7 @@ class AppTextFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: controller, // This was missing! This is the crucial fix
       decoration: InputDecoration(
         isDense: true,
         contentPadding:

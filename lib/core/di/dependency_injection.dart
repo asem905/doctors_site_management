@@ -11,7 +11,15 @@ Future<void> setupGetIt()async{
   // Register your dependencies here
   Dio dio = DioFactory.getDio();
   getIt.registerLazySingleton<ApiService>(() => ApiService(dio));
+  //Login
   getIt.registerLazySingleton<LoginRepo>(() => LoginRepo(getIt()));
-  getIt.registerLazySingleton<LoginCubit>(() => LoginCubit(getIt()));
+  getIt.registerFactory<LoginCubit>(() => LoginCubit(getIt()));
+  //Signup
+  getIt.registerLazySingleton<SignupRepo>(() => SignupRepo(getIt()));
   getIt.registerFactory<SignupCubit>(()=> SignupCubit(getIt()));
+  //Home
+  getIt.registerLazySingleton<HomeApiService>(() => HomeApiService(dio));
+  getIt.registerLazySingleton<HomeRepo>(() => HomeRepo(getIt()));
+  //no need for this line because i am already making acubit each time i need it so i can just in router pass new instance of it each time i need
+  // getIt.registerFactory<HomeCubit>(() => HomeCubit(getIt()));
 }

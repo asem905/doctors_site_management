@@ -1,15 +1,15 @@
 // ignore_for_file: unnecessary_null_comparison
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_complete_proj/core/helpers/app_Regex.dart';
+import 'package:flutter_complete_proj/core/helpers/app_regex.dart';
 import 'package:flutter_complete_proj/features/signup/logic/cubit/sign_up_cubit.dart';
 import '../../../../core/helpers/spacing.dart';
 import '../../../../core/widgets/app_text_form_field.dart';
 import '../../../login/ui/widgets/password_validations.dart';
 
 class SignupForm extends StatefulWidget {
-  const SignupForm({super.key});
+  final SignupCubit signupCubit;
+  const SignupForm({super.key, required this.signupCubit});
 
   @override
   State<SignupForm> createState() => _SignupFormState();
@@ -30,12 +30,17 @@ class _SignupFormState extends State<SignupForm> {
   @override
   void initState() {
     super.initState();
-    passwordController = context.read<SignupCubit>().passwordController;
+    passwordController = widget.signupCubit.passwordController;
     setupPasswordControllerListener();
   }
 
   void setupPasswordControllerListener() {
-    passwordController.addListener(() {
+    passwordController.addListener(_onPasswordChanged);
+  }
+
+  // Extract the listener to a separate method so we can remove it later
+  void _onPasswordChanged() {
+    if (mounted) {  // Check if widget is still mounted
       setState(() {
         hasLowercase = AppRegex.hasLowerCase(passwordController.text);
         hasUppercase = AppRegex.hasUpperCase(passwordController.text);
@@ -44,13 +49,13 @@ class _SignupFormState extends State<SignupForm> {
         hasNumber = AppRegex.hasNumber(passwordController.text);
         hasMinLength = AppRegex.hasMinLength(passwordController.text);
       });
-    });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: context.read<SignupCubit>().formKey,
+      key: widget.signupCubit.formKey,
       child: Column(
         children: [
           AppTextFormField(
@@ -59,8 +64,9 @@ class _SignupFormState extends State<SignupForm> {
               if (value == null || value.isEmpty) {
                 return 'Please enter a valid name';
               }
+              return null;
             },
-            controller: context.read<SignupCubit>().nameController,
+            controller: widget.signupCubit.nameController,
           ),
           verticalSpacing(18),
           AppTextFormField(
@@ -71,8 +77,9 @@ class _SignupFormState extends State<SignupForm> {
                   !AppRegex.isPhoneNumberValid(value)) {
                 return 'Please enter a valid phone number';
               }
+              return null;
             },
-            controller: context.read<SignupCubit>().phoneController,
+            controller: widget.signupCubit.phoneController,
           ),
           verticalSpacing(18),
           AppTextFormField(
@@ -83,12 +90,13 @@ class _SignupFormState extends State<SignupForm> {
                   !AppRegex.isEmailValid(value)) {
                 return 'Please enter a valid email';
               }
+              return null;
             },
-            controller: context.read<SignupCubit>().emailController,
+            controller: widget.signupCubit.emailController,
           ),
           verticalSpacing(18),
           AppTextFormField(
-            controller: context.read<SignupCubit>().passwordController,
+            controller: widget.signupCubit.passwordController,
             hintText: 'Password',
             isObscureText: isPasswordObscureText,
             suffixIcon: GestureDetector(
@@ -105,12 +113,12 @@ class _SignupFormState extends State<SignupForm> {
               if (value == null || value.isEmpty) {
                 return 'Please enter a valid password';
               }
+              return null;
             },
           ),
           verticalSpacing(18),
           AppTextFormField(
-            controller:
-                context.read<SignupCubit>().passwordConfirmationController,
+            controller: widget.signupCubit.passwordConfirmationController,
             hintText: 'Password Confirmation',
             isObscureText: isPasswordConfirmationObscureText,
             suffixIcon: GestureDetector(
@@ -130,12 +138,13 @@ class _SignupFormState extends State<SignupForm> {
               if (value == null || value.isEmpty) {
                 return 'Please enter a valid password';
               }
+              return null;
             },
           ),
           verticalSpacing(24),
           PasswordValidations(
-            hasLowercase: hasLowercase,
-            hasUppercase: hasUppercase,
+            hasLowerCase: hasLowercase,
+            hasUpperCase: hasUppercase,
             hasSpecialCharacters: hasSpecialCharacters,
             hasNumber: hasNumber,
             hasMinLength: hasMinLength,
@@ -147,7 +156,8 @@ class _SignupFormState extends State<SignupForm> {
 
   @override
   void dispose() {
-    passwordController.dispose();
+    // CRITICAL: Remove the listener before disposing
+    passwordController.removeListener(_onPasswordChanged);
     super.dispose();
   }
 }

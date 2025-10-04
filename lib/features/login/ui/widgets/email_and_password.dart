@@ -1,13 +1,15 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_complete_proj/core/helpers/app_Regex.dart';
-import 'package:flutter_complete_proj/core/helpers/spacing.dart';
-import 'package:flutter_complete_proj/core/widgets/app_text_form_field.dart';
+import 'package:flutter_complete_proj/core/helpers/app_regex.dart';
 import 'package:flutter_complete_proj/features/login/logic/cubit/login_cubit.dart';
-import 'package:flutter_complete_proj/features/login/ui/widgets/password_validations.dart';
+import '../../../../core/helpers/spacing.dart';
+import '../../../../core/widgets/app_text_form_field.dart';
+import 'password_validations.dart';
 
 class EmailAndPassword extends StatefulWidget {
-  const EmailAndPassword({super.key});
+  final LoginCubit loginCubit;
+  const EmailAndPassword({super.key, required this.loginCubit});
 
   @override
   State<EmailAndPassword> createState() => _EmailAndPasswordState();
@@ -15,56 +17,86 @@ class EmailAndPassword extends StatefulWidget {
 
 class _EmailAndPasswordState extends State<EmailAndPassword> {
   bool isObscureText = true;
-  late TextEditingController emailController;
+
+  bool hasLowercase = false;
+  bool hasUppercase = false;
+  bool hasSpecialCharacters = false;
+  bool hasNumber = false;
+  bool hasMinLength = false;
+
   late TextEditingController passwordController;
-  var hasLowercase = false;
-  var hasUppercase = false;
-  var hasNumber = false;
-  var hasSpecialCharacters = false;
-  var hasMinLength = false;
+  bool _listenerAttached = false;
+
   @override
   void initState() {
-    // TODO: implement initState
-    passwordController = context.read<LoginCubit>().passwordController;
-    emailController = context.read<LoginCubit>().emailController;
-    setUpPasswordControllerListener();
     super.initState();
+    passwordController = widget.loginCubit.passwordController;
+    setupPasswordControllerListener();
   }
-  void setUpPasswordControllerListener() {
-    passwordController.addListener(() {
-      final password = passwordController.text;
-      setState(() {
-        hasLowercase = AppRegex.hasLowerCase(password);
-        hasUppercase = AppRegex.hasUpperCase(password);
-        hasNumber = AppRegex.hasNumber(password); 
-        hasSpecialCharacters = AppRegex.hasSpecialCharacter(password);
-        hasMinLength = AppRegex.hasMinLength(password);
-      });
+
+  void setupPasswordControllerListener() {
+    // Only add listener if not already attached and controller is not disposed
+    if (!_listenerAttached) {
+      try {
+        passwordController.addListener(_onPasswordChanged);
+        _listenerAttached = true;
+      } catch (e) {
+        // Controller might be disposed, ignore
+        debugPrint('Failed to add listener: $e');
+      }
+    }
+  }
+
+  void _onPasswordChanged() {
+    // Check if widget is still mounted before calling setState
+    if (!mounted) return;
+    
+    setState(() {
+      hasLowercase = AppRegex.hasLowerCase(passwordController.text);
+      hasUppercase = AppRegex.hasUpperCase(passwordController.text);
+      hasSpecialCharacters =
+          AppRegex.hasSpecialCharacter(passwordController.text);
+      hasNumber = AppRegex.hasNumber(passwordController.text);
+      hasMinLength = AppRegex.hasMinLength(passwordController.text);
     });
   }
+
   @override
   void dispose() {
-    // TODO: implement dispose
-    passwordController.dispose();
-    emailController.dispose();
+    // Only remove listener if it was successfully attached
+    if (_listenerAttached) {
+      try {
+        passwordController.removeListener(_onPasswordChanged);
+        _listenerAttached = false;
+      } catch (e) {
+        // Controller might already be disposed, ignore
+        debugPrint('Failed to remove listener: $e');
+      }
+    }
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: context.read<LoginCubit>().formKey,
+      key: widget.loginCubit.formKey,
       child: Column(
         children: [
-          AppTextFormField(hintText: 'Email', controller: emailController,
-           validator: (value) {
-            // Add your email validation logic here using regex
-            if (value == null || value.isEmpty || AppRegex.isEmailValid(value)) {
-              return 'Please enter your email';
-            }
-           }
-           ),
+          AppTextFormField(
+            hintText: 'Email',
+            validator: (value) {
+              if (value == null ||
+                  value.isEmpty ||
+                  !AppRegex.isEmailValid(value)) {
+                return 'Please enter a valid email';
+              }
+              return null;
+            },
+            controller: widget.loginCubit.emailController,
+          ),
           verticalSpacing(18),
           AppTextFormField(
+            controller: widget.loginCubit.passwordController,
             hintText: 'Password',
             isObscureText: isObscureText,
             suffixIcon: GestureDetector(
@@ -75,32 +107,21 @@ class _EmailAndPasswordState extends State<EmailAndPassword> {
               },
               child: Icon(
                 isObscureText ? Icons.visibility_off : Icons.visibility,
-                color: Colors.grey,
               ),
             ),
-            controller: passwordController,
-             validator: (value) {
-              if (value.isEmpty) {
-                return 'Please enter your password';
-              }
-              if (value.length < 8) {
-                return 'Password must be at least 8 characters long';
-              }
-              String pattern =
-                  r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$';
-              RegExp regex = RegExp(pattern);
-              if (!regex.hasMatch(value)) {
-                return 'Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character';
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a valid password';
               }
               return null;
-             },
+            },
           ),
           verticalSpacing(24),
           PasswordValidations(
-            hasLowercase: hasLowercase,
-            hasUppercase: hasUppercase,
-            hasNumber: hasNumber,
+            hasLowerCase: hasLowercase,
+            hasUpperCase: hasUppercase,
             hasSpecialCharacters: hasSpecialCharacters,
+            hasNumber: hasNumber,
             hasMinLength: hasMinLength,
           ),
         ],

@@ -11,9 +11,23 @@ import '../../../core/theming/styles.dart';
 import '../../../core/widgets/app_text_button.dart';
 import '../../login/ui/widgets/terms_and_conditions_text.dart';
 
-class SignupScreen extends StatelessWidget {
+class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 
+  @override
+  State<SignupScreen> createState() => _SignupScreenState();
+}
+
+class _SignupScreenState extends State<SignupScreen> {
+  late SignupCubit signupCubit;
+  
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    signupCubit = context.read<SignupCubit>();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +50,9 @@ class SignupScreen extends StatelessWidget {
                 verticalSpacing(36),
                 Column(
                   children: [
-                    const SignupForm(),
+                    SignupForm(
+                      signupCubit: signupCubit,
+                    ),
                     verticalSpacing(40),
                     AppTextButton(
                       buttonText: "Create Account",
@@ -61,8 +77,10 @@ class SignupScreen extends StatelessWidget {
   }
 
   void validateThenDoSignup(BuildContext context) {
-    if (context.read<SignupCubit>().formKey.currentState!.validate()) {
-      context.read<SignupCubit>().emitSignupStates();
-    }
+  
+  if (signupCubit.formKey.currentState!.validate()) {
+    signupCubit.emitSignupStates();
+  } else {
   }
+}
 }
